@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ReClaim | Sanctuary</title>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#020617">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-500 overflow-x-hidden font-sans">
+
+    <div id="focus-lock" class="hidden fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-10">
+        <h2 class="text-white text-3xl font-black mb-8 tracking-[0.5em] uppercase text-center">FOCUS LOCKED</h2>
+        <button onmousedown="startUnlock()" onmouseup="stopUnlock()" ontouchstart="startUnlock()" ontouchend="stopUnlock()" class="text-[10px] tracking-widest text-slate-500 hover:text-white border border-slate-800 px-10 py-5 rounded-full uppercase transition-all">Hold 2s to Release</button>
+    </div>
+
+    <div id="zen-mode" class="hidden fixed inset-0 z-[9998] bg-[var(--bg-main)] flex flex-col items-center justify-center text-center">
+        <h2 id="zen-timer" class="text-5xl font-light opacity-50 mb-12 tracking-widest">02:00</h2>
+        <div class="relative flex items-center justify-center">
+            <div id="breathing-disk" class="w-32 h-32 bg-blue-500/20 rounded-full transition-all duration-[4000ms] ease-in-out"></div>
+        </div>
+        <p id="zen-text" class="mt-16 text-[10px] uppercase tracking-[0.5em] opacity-40">Prepare</p>
+        <button onclick="toggleZen()" class="mt-20 text-[9px] opacity-20 uppercase tracking-widest hover:opacity-100 transition">Exit Session</button>
+    </div>
+
+    <div id="quiz-modal" class="hidden fixed inset-0 z-[7000] bg-black/90 flex items-center justify-center p-6 text-white">
+        <div class="glass p-10 w-full max-w-sm text-center">
+            <h2 class="text-xl font-bold mb-4">Neural Reset?</h2>
+            <p class="text-xs italic mb-10 opacity-60">This will terminate your current streak. Proceed with honesty.</p>
+            <div class="space-y-4">
+                <button onclick="confirmReset()" class="w-full py-4 bg-red-600/20 text-red-500 border border-red-500/30 rounded-xl text-[10px] font-bold uppercase tracking-widest">Yes, I Relapsed</button>
+                <button onclick="document.getElementById('quiz-modal').classList.add('hidden')" class="w-full py-4 bg-white/5 rounded-xl text-[10px] font-bold uppercase tracking-widest">No, Stay Strong</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="max-w-4xl mx-auto p-6 min-h-screen flex flex-col">
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="font-black text-2xl italic tracking-tighter">ReClaim</h1>
+            <button onclick="toggleTheme()" class="w-12 h-12 flex items-center justify-center bg-slate-500/10 rounded-full hover:bg-slate-500/20 transition">🌓</button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 space-y-6">
+                <div class="glass p-10 text-center relative overflow-hidden flex flex-col justify-center min-h-[450px]">
+
+                    <div id="rank-popup" class="hidden absolute inset-0 bg-blue-600 flex flex-col items-center justify-center z-50 animate-rank-in">
+                        <div class="text-[10px] tracking-[0.4em] text-blue-200 uppercase font-bold mb-2">Evolution Synchronized</div>
+                        <h2 id="new-rank-name" class="text-white text-4xl font-black italic mb-8 uppercase">First Spark</h2>
+                        <button onclick="closeRankPopup()" class="bg-white text-blue-900 font-bold px-10 py-4 rounded-full text-[10px] uppercase tracking-widest shadow-xl">Continue Journey</button>
+                    </div>
+
+                    <div id="rank-display" class="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-4 tracking-[0.3em]">The Void</div>
+                    <h2 id="streak-count" class="text-[10rem] font-black italic leading-none mb-8 tracking-tighter">0</h2>
+                    <button onclick="incrementStreak()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-6 rounded-2xl shadow-2xl shadow-blue-500/30 transition-all active:scale-95">I AM PRESENT</button>
+
+                    <button onclick="startResetQuiz()" class="text-[9px] opacity-20 block mx-auto mt-6 uppercase tracking-widest hover:opacity-100 transition">Reset Cycle</button>
+
+                    <div class="flex justify-center gap-4 mt-8">
+                        <div id="badge-strength" class="glass px-5 py-2 text-[10px] font-bold text-blue-400 border-blue-500/20">💪 0</div>
+                        <div id="badge-peace" class="glass px-5 py-2 text-[10px] font-bold text-emerald-400 border-emerald-500/20">🕊️ 0</div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 flex justify-around items-center">
+                    <span class="text-[9px] uppercase tracking-widest opacity-30">Mood:</span>
+                    <button onclick="setMood('🌿', 'Peaceful')" class="text-2xl hover:scale-125 transition">🌿</button>
+                    <button onclick="setMood('⚡', 'Focused')" class="text-2xl hover:scale-125 transition">⚡</button>
+                    <button onclick="setMood('🔥', 'Triggered')" class="text-2xl hover:scale-125 transition">🔥</button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <button id="panic-btn" onclick="toggleZen()" class="glass p-6 w-full text-left border-red-500/20 hover:bg-red-500/5 transition group">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-red-500 font-bold tracking-widest text-[10px] uppercase">SOS Panic</span>
+                        <span class="animate-pulse">🚨</span>
+                    </div>
+                    <div class="text-[10px] opacity-40">Immediate Sanctuary</div>
+                </button>
+
+                <div class="glass p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em]">Live Pulse</h3>
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
+                            <span id="online-count" class="text-[9px] font-mono opacity-50">1,200 online</span>
+                        </span>
+                    </div>
+                    <div id="community-feed" class="space-y-3 h-32 overflow-hidden relative">
+                        <div class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--glass-bg)] to-transparent pointer-events-none z-10"></div>
+                        <div id="feed-container" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <div class="glass p-6">
+                    <h3 class="text-[10px] font-bold opacity-30 uppercase mb-4 tracking-widest">Mission</h3>
+                    <div id="mission-text" class="text-sm italic font-medium text-blue-400">Loading...</div>
+                </div>
+
+                <div class="glass p-6 h-48 flex flex-col">
+                    <div id="chat-box" class="flex-1 overflow-y-auto text-[11px] space-y-3 opacity-60 mb-4 pr-2 scrollbar-hide"></div>
+                    <div class="flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Ask AI..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-[10px] focus:outline-none focus:border-blue-500">
+                        <button onclick="sendMessage()" class="bg-blue-600 text-white px-3 py-2 rounded-xl text-[9px] font-bold uppercase">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="zen-audio" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+</html>

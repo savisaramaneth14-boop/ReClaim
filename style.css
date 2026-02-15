@@ -1,0 +1,42 @@
+:root {
+    --bg-main: #ffffff;
+    --text-main: #0f172a;
+    --glass-bg: rgba(241, 245, 249, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode {
+    --bg-main: #020617;
+    --text-main: #f1f5f9;
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.05);
+}
+
+body { background-color: var(--bg-main); color: var(--text-main); }
+
+.glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(16px);
+    border-radius: 28px;
+}
+
+.zen-expand { transform: scale(2.8); background-color: rgba(59, 130, 246, 0.4); }
+
+@keyframes rankReveal {
+    0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+.animate-rank-in { animation: rankReveal 0.6s cubic-bezier(0.23, 1, 0.32, 1) both; }
+
+#rank-popup { background: radial-gradient(circle at center, #2563eb, #1e3a8a); }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.feed-entry { animation: slideInRight 0.5s ease-out forwards; }
